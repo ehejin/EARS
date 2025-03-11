@@ -45,49 +45,63 @@ class CustomHelpCommand(commands.HelpCommand):
         await channel.send(embed=embed)
 
 
-# Store created quizzes
-class Quizzes: 
+#  Quiz agent
+class Quiz: 
     def __init__(self):
-        # self.topics = []
-        # Map questions to answers
-        self.quizzes = []
+        pass 
+    # Register that a new quiz has been created
+    def add_quiz(self, quiz, topic, answers, cleaned_answers: list[str]):
+        self.quiz = quiz
+        self.topic = topic
+        self.answers = answers
+        self.cleaned_answers = cleaned_answers
+        self.score = 0
 
-    # Adds a quiz, topic, and answers and returns the id
-    def add_quiz(self, quiz, topic, answers):
-        self.quizzes.append([quiz, topic, answers])
-        return len(self.quizzes) - 1
+
+    def get_quiz(self):
+        return self.quiz
     
-    def get_answers_for(self):
-        return self.get_answers_for(len(self.quizzes) - 1)
-
-    def get_answers_for(self, id):
-        return self.quizzes[id][2]
+    def get_topic(self):
+        return self.topic
     
-    def get_topic_for(self):
-        return self.get_topic_for(len(self.quizzes) - 1)
-
-    def get_topic_for(self, id):
-        return self.quizzes[id][1]
-
-    # def add_topics(self, topic):
-    #     self.topics.append(topic)
-
-    # def generate_quiz(self, quiz, answers):
-    #     self.quizzes[self.quiz_id] = {} 
-    #     self.quizzes[self.quiz_id][quiz] = answers
-    #     self.quiz_id += 1
-
-    # def get_last_topic(self): 
-    #     return self.topics[-1]
-
-    # def get_last_quiz(self):
-    #     return self.quizzes[-1]
+    def get_answers(self):
+        return self.answers
     
-    # def get_quizzes(self):
-    #     return list(self.quizzes.keys())
+    def get_score(self):
+        return self.score
+
+class QuizUpload:
+    # quizlet decks upload
+    def __init__(self):
+        self.quiz_deck = {}
+
+    def add_new_deck(self, new_deck):
+        self.quiz_deck = new_deck
     
-    # def get_topics(self):
-    #     return self.topics
+    def get_deck(self):
+        """
+        Format last deck as a string
+        """
+        return "\n".join([f"question prompt: {key}, answer: {value}" for key, value in self.quiz_deck.items()])
+
+
+class XPCounter():
+    def __init__(self):
+        self.xp = 0
+        self.interactive_quizzes_completed = 0
+        self.questions_answered = 0
+        self.questions_correct = 0
+        self.questions_wrong = 0
         
-    # def get_answers(self):
-    #     return [list(quiz.values()) for quiz in self.quizzes] 
+    def question_finish(self, is_correct):
+        if is_correct:
+            self.questions_correct += 1
+            self.xp += 1
+        else:
+            self.questions_wrong += 1
+    
+        self.questions_answered += 1
+        
+    def quiz_finish(self):
+        self.interactive_quizzes_completed += 1
+        self.xp += 2
