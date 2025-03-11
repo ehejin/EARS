@@ -5,6 +5,7 @@ import logging
 from discord.ext import commands
 from dotenv import load_dotenv
 from agent import MistralAgent
+from utils import CustomHelpCommand, Quizzes
 
 PREFIX = "!"
 
@@ -14,18 +15,20 @@ logger = logging.getLogger("discord")
 # Load the environment variables
 load_dotenv()
 
-# Create the bot with all intents
-# The message content and members intent must be enabled in the Discord Developer Portal for the bot to work.
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix=PREFIX, intents=intents)
+bot = commands.Bot(command_prefix=PREFIX, intents=intents, help_command=CustomHelpCommand())
 
-# Import the Mistral agent from the agent.py file
-agent = MistralAgent()
+mistral_agent = MistralAgent()
 
-
-# Get the token from the environment variables
 token = os.getenv("DISCORD_TOKEN")
 
+quiz_agent = Quizzes() 
+
+# quizlet decks upload
+class QuizData:
+    def __init__(self):
+        self.quiz_decks = []
+        
 
 @bot.event
 async def on_ready():
@@ -52,16 +55,107 @@ async def on_message(message: discord.Message):
     if message.author.bot or message.content.startswith("!"):
         return
 
-    # Process the message with the agent you wrote
-    # Open up the agent.py file to customize the agent
     logger.info(f"Processing message from {message.author}: {message.content}")
-    response = await agent.run(message)
+    response = await mistral_agent.run(message)
 
     # Send the response back to the channel
     await message.reply(response)
 
+# Command: Generate a quiz
+@bot.command(name="quiz",help="Create a 5-question multiple choice quiz on any topic.")
+async def generate_quiz(ctx, *, prompt=None):
+    # Generate quiz on prompt
+    prompt = f"Generate a short 5-question multiple-choice quiz on {prompt}. Each question should have 4 options (A, B, C, D) and do not include the correct answers in the output."
+    quiz = await mistral_agent.run(prompt)
+    
+    # Generate topic from quiz
+    quiz_topic_prompt = f"Here is a 5 question quiz:\n {quiz}. What is the topic of this quiz? Please just respond with your answer and no other information. For example, a quiz on the topic of whales should res"
+    topic = await mistral_agent.run(quiz_topic_prompt)
 
-# Commands
+    # Generate answers for quiz
+    quiz_answers_prompt = f"Here is a 5 question quiz:\n {quiz}. Please write out the answers in the following form: 1) A - explanation\n2) B - explanation\n.... Please think carefully about your answers \
+        and double check that the answers and your reasoning is correct."
+    answers = await mistral_agent.run(quiz_answers_prompt)
+
+    quiz_agent.add_quiz(quiz, topic, answers)
+    await ctx.send(f"📚 **Quiz on {topic}:**\n{quiz}")
+
+@bot.command(name="answers")
+async def get_answers(ctx, *, quiz_id=None):
+    """
+    Get the answers to the quiz given the quiz id.
+    If no quiz ID is specified, the answers to the latest quiz are returned.
+    """
+    # If no quiz id is specified, give answers to latest quiz
+    await ctx.send(f"📚 **Quiz on {quiz_agent.get_topic_for()}:**\n{quiz_agent.get_answers_for()}")
+
+
+# Check person's answers
+@bot.command(name="submit_answers")
+async def submit_answers(ctx, *, user_answers: str, quiz_id):
+    """
+    Submit your answers to the quiz in following format: !submit_answers 1A 2B 3C 4D 5A.
+    The bot evaluates their performance and gives feedback.
+    """
+
+    correct_answers = quiz_agent.get_answers_for()
+    user_answers_list = user_answers.split()  
+
+    score = 0
+    incorrect_questions = []
+
+    for i, answer in enumerate(user_answers_list):
+        question_num = i + 1
+        correct_answer = correct_answers[i].split(") ")[1] 
+        user_answer = answer[1:] 
+
+        if user_answer.upper() == correct_answer.upper():
+            score += 1
+        else:
+            incorrect_questions.append(f"WRONG! Question {question_num}: Correct answer was {correct_answer}, you chose {user_answer}")
+
+    total_questions = len(correct_answers)
+    feedback = f"You scored {score}/{total_questions}!\n\n"
+
+    if incorrect_questions:
+        feedback += "**Areas to Review:**\n" + "\n".join(incorrect_questions)
+
+    await ctx.send(feedback)
+
+'''
+@bot.command(name="flashcards")
+async def make_quiz_from_flashcards(ctx, *, user_answers: str):
+'''
+
+
+# Helper commands
+
+# Upload quizlet slide deck
+@bot.command(name="upload", help = "Upload quizlet slide deck")
+async def upload_deck(ctx):
+    if not ctx.message.attachments:
+        await ctx.send("Please upload a .txt file with the command.")
+        return
+    
+    attachment = ctx.message.attachments[0]
+    if not attachment.filename.endswith(".txt"):
+        await ctx.send("Only .txt files are supported for decks.")
+        return
+    
+    content = await attachment.read()
+    text = content.decode("utf-8").strip()
+    
+    lines = text.split("\n")
+    qa_list = []
+    
+    for line in lines:
+        parts = line.split("\t")  # Split by tab character
+        if len(parts) == 2:
+            question, answer = parts
+            qa_list.append(f"question: {question.strip()}, answer: {answer.strip()}")
+    
+    response = "\n".join(qa_list) if qa_list else "No valid entries found."
+    await ctx.send(f"Processed Questions and Answers:\n {response}")
 
 
 # This example command is here to show you how to add commands to the bot.
@@ -74,6 +168,7 @@ async def ping(ctx, *, arg=None):
     else:
         await ctx.send(f"Pong! Your argument was {arg}")
 
-
 # Start the bot, connecting it to the gateway
 bot.run(token)
+
+
