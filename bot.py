@@ -88,11 +88,13 @@ async def generate_new_quiz(prompt):
 @bot.command(name="answers")
 async def get_answers(ctx):
     """
-    Get the answers to the quiz given the quiz id.
-    If no quiz ID is specified, the answers to the latest quiz are returned.
+    Get the answers to the latest quiz.
     """
-    # If no quiz id is specified, give answers to latest quiz
-    await ctx.send(f"📚 **Quiz on {quiz_agent.get_topic()}:**\n{quiz_agent.get_answers()}")
+    # Ensure that there is a quiz
+    if len(quiz_agent.quiz) != 0:
+        await ctx.send(f"📚 **Quiz on {quiz_agent.get_topic()}:**\n{quiz_agent.get_answers()}")
+    else:
+        await ctx.send('No active quiz!')
 
 # asks the next question and checks  it
 async def ask_next_question(ctx, i):
