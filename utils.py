@@ -54,7 +54,7 @@ class Quiz:
     def add_quiz(self, quiz, topic, answers, cleaned_answers: list[str]):
         self.quiz = quiz
         self.topic = topic
-        self.answers = answers
+        self.answers = answers[:1999]
         self.cleaned_answers = cleaned_answers
         self.score = 0
         self.last_asked = ''

@@ -18,11 +18,11 @@ QUIZ_TOPIC_PROMPT = "Here is a 5 question quiz:\n {0}. What is the topic \
                     For example, a quiz on the topic of whales should result in the response 'Whales'."
 
 
-QUIZ_ANSWERS_PROMPT = "Here is a 5 question quiz:\n {0}. Please write a short explanation \
-                    of your answers. At the end of the response, please write out the answers EXACTLY in the \
+QUIZ_ANSWERS_PROMPT = "Here is a 5 question quiz:\n {0}. Please write a two sentence explanation \
+                    of each answer. At the end of the response, please write out the answers EXACTLY in the \
                     following form: 1) A\n2) B\n.... Please think carefully about your answers and \
-                    double check that the answers and your reasoning is correct. Your response should \
-                    not exceed 2000 characters."
+                    double check that the answers and your reasoning is correct but ensure that your \
+                    output is not that long. Your response MUST not exceed 2000 characters."
 
 QUIZ_HINT_PROMPT = "You are helping a student working the on the following question: {0}\n\n Please \
                     give the student a small hint that does NOT directly tell or include the answer."
