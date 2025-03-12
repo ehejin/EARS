@@ -116,5 +116,6 @@ class XPCounter():
         for i, cutoff in reversed(list(enumerate(score_cutoffs))):
             if self.xp >= cutoff and (self.xp - score - 2) < cutoff:
                 await ctx.send(f"🎉Congrats‼️🎊 You have now reached StudyTier {messages[i]}. You've unlocked a new pig: {pigs[i]}.")
+                self.pig = pigs[i]
                 return
 
