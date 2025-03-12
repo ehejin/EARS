@@ -48,7 +48,8 @@ class CustomHelpCommand(commands.HelpCommand):
 #  Quiz agent
 class Quiz: 
     def __init__(self):
-        pass 
+        self.last_asked = ''
+
     # Register that a new quiz has been created
     def add_quiz(self, quiz, topic, answers, cleaned_answers: list[str]):
         self.quiz = quiz
@@ -56,7 +57,7 @@ class Quiz:
         self.answers = answers
         self.cleaned_answers = cleaned_answers
         self.score = 0
-
+        self.last_asked = ''
 
     def get_quiz(self):
         return self.quiz
@@ -92,6 +93,8 @@ class XPCounter():
         self.questions_answered = 0
         self.questions_correct = 0
         self.questions_wrong = 0
+        self.pig = '🐖'
+
         
     def question_finish(self, is_correct):
         if is_correct:
@@ -102,6 +105,16 @@ class XPCounter():
     
         self.questions_answered += 1
         
-    def quiz_finish(self):
+    async def quiz_finish(self, ctx, score):
         self.interactive_quizzes_completed += 1
         self.xp += 2
+
+        # See whether message should be sent to user for reaching new level
+        score_cutoffs = [3, 7, 15, 25]
+        messages = ['1', '2', '3', '4']
+        pigs = ['🐷ྀི', '₍ᐢ･⚇･ᐢ₎', 'ʚ₍՞ •̀ Ꙫ •́ ՞₎ɞ', '⍝◜ᐢ•⚇•ᐢ◝⍝']
+        for i, cutoff in reversed(list(enumerate(score_cutoffs))):
+            if self.xp >= cutoff and (self.xp - score - 2) < cutoff:
+                await ctx.send(f"🎉Congrats‼️🎊 You have now reached StudyTier {messages[i]}. You've unlocked a new pig: {pigs[i]}.")
+                return
+

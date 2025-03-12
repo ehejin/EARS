@@ -4,13 +4,14 @@ import logging
 
 from discord.ext import commands
 from dotenv import load_dotenv
-from agent import MistralAgent
+from agent import Agent
 
 from utils import CustomHelpCommand, Quiz, QuizUpload, XPCounter
 from constants import PREFIX, QUIZ_PROMPT, QUIZ_TOPIC_PROMPT, \
                         QUIZ_ANSWERS_PROMPT, QUIZ_DECK_PROMPT, \
                         INTERACTIVE_QUIZ_FINISH, CLEANED_QUIZ_ANSWERS_PROMPT, \
-                        QUIZ_DECK_TOPIC_PROMPT, GET_QUESTION_PROMPT
+                        QUIZ_DECK_TOPIC_PROMPT, GET_QUESTION_PROMPT, \
+                        QUIZ_HINT_PROMPT
 
 # Setup logging
 logger = logging.getLogger("discord")
@@ -21,7 +22,7 @@ load_dotenv()
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=PREFIX, intents=intents, help_command=CustomHelpCommand())
 
-mistral_agent = MistralAgent()
+agent = Agent()
 
 token = os.getenv("DISCORD_TOKEN")
 
@@ -53,7 +54,6 @@ async def on_message(message: discord.Message):
     # Ignore non-command messages
     return
 
-
 # Generate a quiz
 async def generate_new_quiz(prompt):
     """
@@ -66,22 +66,22 @@ async def generate_new_quiz(prompt):
     if len(quiz_upload.quiz_deck) != 0:
         if prompt is None:
             # Generate quiz from provided deck
-            quiz = await mistral_agent.run(QUIZ_DECK_PROMPT.format(quiz_upload.get_deck()))
+            quiz = await agent.run(QUIZ_DECK_PROMPT.format(quiz_upload.get_deck()))
         else:
             # Generate quiz from deck and prompt
-            quiz = await mistral_agent.run(QUIZ_DECK_TOPIC_PROMPT.format(prompt, quiz_upload.get_last_deck()))
+            quiz = await agent.run(QUIZ_DECK_TOPIC_PROMPT.format(prompt, quiz_upload.get_last_deck()))
     else:
         # Generate quiz from prompt
-        quiz = await mistral_agent.run(QUIZ_PROMPT.format(prompt))
+        quiz = await agent.run(QUIZ_PROMPT.format(prompt))
         
     # Generate topic from quiz
-    topic = await mistral_agent.run(QUIZ_TOPIC_PROMPT.format(quiz))
+    topic = await agent.run(QUIZ_TOPIC_PROMPT.format(quiz))
 
     # Generate answers for quiz
-    answers = await mistral_agent.run(QUIZ_ANSWERS_PROMPT.format(quiz))
+    answers = await agent.run(QUIZ_ANSWERS_PROMPT.format(quiz))
 
     # Generate cleaned answers
-    cleaned_answers_str = await mistral_agent.run(CLEANED_QUIZ_ANSWERS_PROMPT.format(answers))
+    cleaned_answers_str = await agent.run(CLEANED_QUIZ_ANSWERS_PROMPT.format(answers))
 
     quiz_agent.add_quiz(quiz, topic, answers, list(cleaned_answers_str.split(',')))
 
@@ -98,8 +98,11 @@ async def get_answers(ctx):
 
 # asks the next question and checks  it
 async def ask_next_question(ctx, i):
-    question = await mistral_agent.run(GET_QUESTION_PROMPT.format(str(i + 1), quiz_agent.quiz))
+    question = await agent.run(GET_QUESTION_PROMPT.format(str(i + 1), quiz_agent.quiz))
     await ctx.send(question)
+    
+    # Set alast question to be question
+    quiz_agent.last_asked = question
 
     # Ensure that user input is valid
     answer = ''
@@ -122,6 +125,9 @@ async def start_quiz(ctx, *, prompt=None):
     Generates a quiz in an interactive format, one question at a time. 
     """
 
+    # Tell user that we are generating a new quiz
+    await ctx.send("**Generating quiz...**")
+
     await generate_new_quiz(prompt)
 
     topic = quiz_agent.get_topic()
@@ -130,10 +136,24 @@ async def start_quiz(ctx, *, prompt=None):
         await ask_next_question(ctx, i)
     final_score = (quiz_agent.score / len(quiz_agent.cleaned_answers)) * 100 
 
-    xp_counter.quiz_finish()
-    await ctx.send(INTERACTIVE_QUIZ_FINISH.format(final_score, quiz_agent.cleaned_answers, xp_counter.xp, 
+    await xp_counter.quiz_finish(ctx, quiz_agent.score)
+    await ctx.send(INTERACTIVE_QUIZ_FINISH.format(xp_counter.pig, final_score, quiz_agent.cleaned_answers, xp_counter.xp, 
                                                   xp_counter.questions_answered, xp_counter.questions_correct))
 
+@bot.command(name="hint")
+async def get_hint(ctx):
+    """
+    Get a hint for the last asked question!
+    """
+
+    if quiz_agent.last_asked == '':
+        await ctx.send('No question has been asked yet! Try again once you have started a quiz!')
+    else:
+        await ctx.send("**Generating a hint..**")
+        hint = await agent.run(QUIZ_HINT_PROMPT.format(quiz_agent.last_asked))
+        await ctx.send(hint)
+
+    
 # Upload quizlet slide deck
 @bot.command(name="upload")
 async def upload_deck(ctx):

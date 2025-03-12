@@ -24,17 +24,20 @@ QUIZ_ANSWERS_PROMPT = "Here is a 5 question quiz:\n {0}. Please write a short ex
                     double check that the answers and your reasoning is correct. Your response should \
                     not exceed 2000 characters."
 
+QUIZ_HINT_PROMPT = "You are helping a student working the on the following question: {0}\n\n Please \
+                    give the student a small hint that does NOT directly tell or include the answer."
 
 CLEANED_QUIZ_ANSWERS_PROMPT = "Here are the answers to a 5 question quiz:\n\n {0}\n\n Please respond with a comma \
                                separated list of the answers to the 5 questions and no additional information.\
                                The answer should be in the form 'A,A,B,B,C'. Make SURE that the answers in \
                                the list are the exact same as in the provided answer."
 
-GET_QUESTION_PROMPT = "Retrieve the {0}th question from the following quiz. ONLY include the question in \
-                       your response and do not include the answer or any additional information before or \
+GET_QUESTION_PROMPT = "Retrieve the {0}th question from the following quiz. ONLY include the question and answer choices in \
+                       your response and do not include the answer or any other information before or \
                        after the question. Here is the quiz:\n\n{1}"
 
 # Responses from our bt 
 INTERACTIVE_QUIZ_FINISH = "🎉Congrats on finishing an interactive quiz session!🎉\n \
-                        - Your quiz score is: **{0}%**. The correct answers were {1}.\n - Your cumulative Study Score: **{2} XP** \n \
-                        - You've answered {3} questions in total - amazing! \n - Out of these questions, you got {4} correct. Keep up the great progress!"
+                        - Your current pig is {0}\
+                        - Your quiz score is: **{1}%**. The correct answers were {2}.\n - Your cumulative Study Score: **{3} XP** \n \
+                        - You've answered {4} questions in total - amazing! \n - Out of these questions, you got {5} correct. Keep up the great progress!"
