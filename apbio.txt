@@ -1,0 +1,35 @@
+3 types of tissue systems	ground, vascular, and dermal
+Abscisic acid	Inhibits cell growth, "baby-sitting" hormone.
+Auxin	Stem elongation, gravitropism, phototropism
+C4 plants	These types of plants contain bundle sheath cells, which assist in respiration in hot and dry regions.
+Casparian Strip	Blocks the flow of water in the root and are in between endodermis cells,; made of suberin
+Collenchyma	live cells that provide flexible and mechanical support; found in stems and leaves
+Collenchyma, parenchyma, and sclerenchyma	Ground tissue is made up of..
+Cork Cambium	produces protective covering that replaces epidermis during widening.
+Cutin	a waxy, water-repellent substance occurring in the cuticle of plants and consisting of highly polymerized esters of fatty acids.
+Cytokinins	promote cell division
+Dermal Tissue	protective outer coating for plants(epidermis).
+epidermis, cortex, vascular cylinder, xylem/phloem	Structure from the outermost part of the stem to the innermost
+epidermis, endodermis, vascular cylinder, xylem/phloem	Structure from the outermost part of the root to the innermost
+epidermis, mesophyll, vascular bundles, xylem/phloem	Structure from the outermost part of the leaf to the innermost
+Ethylene	Ripens fruit and flowers
+Fibrous system(monocots)	Anchoring system that does not go deep down into soil.
+Florigen	Thought to assist in flowering of flowers
+Gibberellins	Induce growth in dormant seeds, buds, and flowers.
+Long-Day Plants	Spinach
+meristem cells	Growth in plants occurs because of..
+Parenchyma	Cells that play a role in storage, secretion, and photosynthesis
+Phloem	transports sugar
+Phytochrome	Produces florigen
+Primary growth	increased length(occurs in apical meristems)
+Scelerenchyma	Cells that protect seeds and support the plant.
+Secondary growth	increased with(occurs in regions of lateral meristems).
+Short-Day Plants	Poinsettias,Chrysanthemums
+Taproot system(dicots)	System that divides into lateral roots which anchor the plant.
+Vascular Cambium	gives rise to secondary xylem/phloem; runs entire length of plant.
+Vascular Cylinder	composed of a collection of cells called the pericycle.(holds the vascular tissue(xylem and phloem))
+Xylem	transports water and minerals
+xylem and phloem	Vascular tissue is made up of...
+Zone of Cell Division	cells divide
+zone of elongation	cells grow longer
+zone of maturation	cells mature to specialized forms(phloem, xylem, parenchyma)

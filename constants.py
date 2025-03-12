@@ -38,6 +38,6 @@ GET_QUESTION_PROMPT = "Retrieve the {0}th question from the following quiz. ONLY
 
 # Responses from our bt 
 INTERACTIVE_QUIZ_FINISH = "🎉Congrats on finishing an interactive quiz session!🎉\n \
-                        - Your current pig is {0}\
+                        - Your current pig is {0} \n \
                         - Your quiz score is: **{1}%**. The correct answers were {2}.\n - Your cumulative Study Score: **{3} XP** \n \
                         - You've answered {4} questions in total - amazing! \n - Out of these questions, you got {5} correct. Keep up the great progress!"
