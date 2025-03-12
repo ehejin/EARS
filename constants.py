@@ -33,7 +33,7 @@ CLEANED_QUIZ_ANSWERS_PROMPT = "Here are the answers to a 5 question quiz:\n\n {0
                                the list are the exact same as in the provided answer."
 
 GET_QUESTION_PROMPT = "Retrieve the {0}th question from the following quiz. ONLY include the question and answer choices in \
-                       your response and do not include the answer. Make sure the questions are in a properly formatted bulleted \
+                       your response and do not include the answer. Make sure the questions are in a properly formatted bulleted list. \
                        Here is the quiz:\n\n{1}"
 
 # Responses from our bt 
