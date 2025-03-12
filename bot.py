@@ -69,7 +69,7 @@ async def generate_new_quiz(prompt):
             quiz = await agent.run(QUIZ_DECK_PROMPT.format(quiz_upload.get_deck()))
         else:
             # Generate quiz from deck and prompt
-            quiz = await agent.run(QUIZ_DECK_TOPIC_PROMPT.format(prompt, quiz_upload.get_last_deck()))
+            quiz = await agent.run(QUIZ_DECK_TOPIC_PROMPT.format(prompt, quiz_upload.get_deck()))
     else:
         # Generate quiz from prompt
         quiz = await agent.run(QUIZ_PROMPT.format(prompt))
