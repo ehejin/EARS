@@ -126,8 +126,6 @@ async def start_quiz(ctx, *, prompt=None):
     """
 
     # Tell user that we are generating a new quiz
-    await ctx.send("**Generating quiz...**")
-
     await generate_new_quiz(prompt)
 
     topic = quiz_agent.get_topic()
